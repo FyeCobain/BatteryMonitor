@@ -10,8 +10,10 @@ from urllib.parse import urlencode
 import json
 import winreg
 from winsound import PlaySound, SND_FILENAME
-from simplesystray import SysTrayIcon
+import threading
 from time import sleep as sl
+from simplesystray import SysTrayIcon
+import keyboard
 
 # Startup info for subprocesses
 startupinfo = subprocess.STARTUPINFO()
@@ -22,6 +24,9 @@ running = True
 paused = False
 kasa_error_codes = []
 def start():
+    if hibernation.strip().lower() == "true":
+        keyboard.listen_keybaord(hibernate)
+
     global running
     global paused
     while running:
@@ -154,6 +159,7 @@ max_percent = int(config['BATTERY_RANGE']['max_percent'])
 locals().update(config['PING_DOMAIN'])  
 locals().update(config['WEBHOOKS'])
 locals().update(config['KASA_DEVICE'])
+locals().update(config['HOTKEYS'])
 
 # Returns true if the script will run at start
 def does_run_at_start():
@@ -188,15 +194,19 @@ def shutdown():
         plug(False, True)
     subprocess.Popen('shutdown -s -t 0', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-# reboots the computer
-def reboot():
-    subprocess.Popen('shutdown -r -t 0', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
 # tries to turn off the smart plug, pauses the battery monitor and hibernates the computer
-def hibernate():
+def hibernate(play_sound=True):
     global paused
     paused = True
-    if charger_is_plugged():
+    charger_plugged = charger_is_plugged()
+    if play_sound:
+        threading.Thread(
+            target=lambda: PlaySound(scr_path + r'\sounds\hibernation.wav', SND_FILENAME),
+            daemon=True
+        ).start()
+        if not charger_plugged:
+            sl(1)
+    if charger_plugged:
         plug(False, True)
     subprocess.Popen('shutdown -h', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     sl(3.5)
@@ -215,14 +225,14 @@ def get_menu_options():
             ("Open script dir", None, lambda systray, num: startfile(scr_path)),
             ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate())
+            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False))
         )
     else:
         return (
             ("Open script dir", None, lambda systray, num: startfile(scr_path)),
             ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate())
+            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False))
         )
 
 sysTrayIcon = SysTrayIcon(scr_path + r'\icons\plug.ico', 'Battery Monitor', menu_options = get_menu_options(), on_quit = on_closing, default_menu_index = 0)

@@ -1,8 +1,11 @@
 # `Battery Monitor`
 
-_**Version** 5.3.0_
+_**Version** 6.0.0_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It functions as an icon in the system tray.
+
+### Source Code
+**[GitHub](https://github.com/FyeCobain/Battery-monitor)**
 
 ### Requirements
 - **[simplesystray](https://github.com/actorpus/systrayv2)**
@@ -10,14 +13,14 @@ A Python script for **Windows** that monitors and controls the laptop's battery 
 pip install simplesystray
 ```
 
-### Source Code
-**[GitHub](https://github.com/FyeCobain/Battery-monitor)**
-
 ### Usage
 
 > To configure the script edit the _config.ini_ file
 
 - You can set a **domain** to ping. Useful for gaming.
+
+- If the **hibernation hotkey**  is set to true, you can hibernate by pressing _left shift_ + _right shift_.
+
 - You can set two **URLs** so that the script makes a GET request when the percentage is less than the minimum or greater than the maximum allowed. Intended to set up an **IFTTT** webhook to turn **ON/OFF** a smart plug.
 
 - You can set a Kasa token and device ID for the same result. Please refer to [this gist](https://gist.github.com/FyeCobain/1e367b0a9d5693c579a4fd6b20fac682).
@@ -37,6 +40,8 @@ batterymonitor.pyw "C:\OpenWhenClosing.exe"
 
 #### Sounds
 
-<a href="https://freesound.org/people/mokasza/sounds/810739/">One-shot</a> by <a href="https://freesound.org/people/mokasza/">mokasza</a> | License: <a href="https://creativecommons.org/licenses/by/4.0/">Attribution 4.0</a>
+<a href="https://freesound.org/people/FoolBoyMedia/sounds/352652/">Piano Notification 2</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
 
-<a href="https://freesound.org/people/Timbre/sounds/348976/">soft attack alert.wav</a> by <a href="https://freesound.org/people/Timbre/">Timbre</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
+<a href="https://freesound.org/people/FoolBoyMedia/sounds/352651/">Piano Notification 3</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
+
+<a href="https://freesound.org/people/FoolBoyMedia/sounds/352655/">Piano Notification 5a</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
