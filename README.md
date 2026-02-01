@@ -1,16 +1,16 @@
 # `Battery Monitor`
 
-_**Version** 6.0.0_
+_**Version** 6.1_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It functions as an icon in the system tray.
 
-### Source Code
-**[GitHub](https://github.com/FyeCobain/Battery-monitor)**
+#### **[Source code](https://github.com/FyeCobain/Battery-monitor)**
 
 ### Requirements
-- **[simplesystray](https://github.com/actorpus/systrayv2)**
+##### **[pynput](https://pynput.readthedocs.io)**
+##### **[simplesystray](https://github.com/actorpus/systrayv2)**
 ```console
-pip install simplesystray
+pip install pynput simplesystray
 ```
 
 ### Usage
