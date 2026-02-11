@@ -8,13 +8,14 @@ def capslock_on():
 
 paused = False
 callback = None
-lastKey = ""
-shift_pressed = False
+space_pressed = False
+l_shift_pressed = False
 r_shift_pressed = False
 
 # On key press
 def on_press(key, injected):
-    global shift_pressed
+    global space_pressed
+    global l_shift_pressed
     global r_shift_pressed
 
     if paused:
@@ -23,15 +24,18 @@ def on_press(key, injected):
     try:
         keyChar = key.char
     except AttributeError:
-        if (key == Key.shift):
-            shift_pressed = True
+        if (key == Key.space):
+            space_pressed = True
+        elif (key == Key.shift):
+            l_shift_pressed = True
         elif (key == Key.shift_r):
             r_shift_pressed = True
 
 #On key release
 def on_release(key, injected):
     global paused
-    global shift_pressed
+    global space_pressed
+    global l_shift_pressed
     global r_shift_pressed
 
     if paused:
@@ -40,16 +44,19 @@ def on_release(key, injected):
     try:
         keyChar = key.char
     except AttributeError:
-        if (shift_pressed and r_shift_pressed):
+        if (space_pressed and l_shift_pressed and r_shift_pressed):
             paused = True
             callback()
             sl(4)
             paused = False
-            shift_pressed = False
+            space_pressed = False
+            l_shift_pressed = False
             r_shift_pressed = False
 
-        if (key == Key.shift):
-            shift_pressed = False
+        if (key == Key.space):
+            space_pressed = False
+        elif (key == Key.shift):
+            l_shift_pressed = False
         elif (key == Key.shift_r):
             r_shift_pressed = False
 

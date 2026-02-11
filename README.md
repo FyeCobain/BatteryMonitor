@@ -1,6 +1,6 @@
 # `Battery Monitor`
 
-_**Version** 6.1_
+_**Version** 6.2_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It functions as an icon in the system tray.
 
@@ -19,7 +19,7 @@ pip install pynput simplesystray
 
 - You can set a **domain** to ping. Useful for gaming.
 
-- If the **hibernation hotkey**  is set to true, you can hibernate by pressing _left shift_ + _right shift_.
+- If the **hibernation hotkey**  is set to True, you can hibernate by pressing _left shift_ + _right shift_ + _space_.
 
 - You can set two **URLs** so that the script makes a GET request when the percentage is less than the minimum or greater than the maximum allowed. Intended to set up an **IFTTT** webhook to turn **ON/OFF** a smart plug.
 
