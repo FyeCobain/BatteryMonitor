@@ -1,6 +1,6 @@
 # `Battery Monitor`
 
-_**Version** 6.2_
+_**Version** 6.3_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It functions as an icon in the system tray.
 
@@ -19,7 +19,7 @@ pip install pynput simplesystray
 
 - You can set a **domain** to ping. Useful for gaming.
 
-- If the **hibernation hotkey**  is set to True, you can hibernate by pressing _left shift_ + _right shift_ + _space_.
+- If the **hibernation hotkey**  is set to True, you can hibernate by pressing _shift_ + _insert_.
 
 - You can set two **URLs** so that the script makes a GET request when the percentage is less than the minimum or greater than the maximum allowed. Intended to set up an **IFTTT** webhook to turn **ON/OFF** a smart plug.
 
@@ -44,4 +44,4 @@ batterymonitor.pyw "C:\OpenWhenClosing.exe"
 
 <a href="https://freesound.org/people/FoolBoyMedia/sounds/352651/">Piano Notification 3</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
 
-<a href="https://freesound.org/people/FoolBoyMedia/sounds/352655/">Piano Notification 5a</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
+<a href="https://freesound.org/people/FoolBoyMedia/sounds/352654/">Piano Notification 5b</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>
