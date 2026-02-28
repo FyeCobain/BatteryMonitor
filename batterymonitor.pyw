@@ -4,6 +4,7 @@ from re import search, sub
 from sys import argv
 from ctypes import windll
 from time import time
+import uuid
 from configparser import ConfigParser
 from urllib.request import urlopen, Request
 from urllib.parse import urlencode
@@ -94,6 +95,10 @@ def plug(on, shutingDown = False):
         })
         if response:
             if response[0] == 200:
+                if "result" in response[1]:
+                    if "token" in response[1]["result"]:
+                        return
+
                 if not (shutingDown):
                     sleep(sleepTime)
                 else:
@@ -121,6 +126,7 @@ def get(url):
 
 # Performs a POST request and returns the response data as a tuple
 def post(url, body):
+    global kasa_token
     try:
         request = Request(
             url,
@@ -129,13 +135,32 @@ def post(url, body):
             method="POST"
         )
         with urlopen(request, timeout = 5) as response:
-            bodyData = json.loads(response.read().decode("utf-8"))
-            error_code = bodyData["error_code"]
+            body_data = json.loads(response.read().decode("utf-8"))
+            error_code = body_data["error_code"]
             if error_code != 0:
-                if not error_code in kasa_error_codes:
+                msg = body_data["msg"]
+                if kasa_username and kasa_password and "token expired" in msg.lower():
+                    login_response = post(f"https://wap.tplinkcloud.com", {
+                        "method": "login",
+                        "params": {
+                            "appType": "Kasa",
+                            "cloudUserName": kasa_username,
+                            "cloudPassword": kasa_password,
+                            "terminalUUID": str(uuid.uuid4())
+                        }
+                    })
+                    return login_response
+                elif not error_code in kasa_error_codes:
                     kasa_error_codes.append(error_code)
-                    windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { bodyData["msg"] }", "Kasa device error - BatteryMonitor", 0x10, 0, 30000)
-            return (response.status, bodyData)
+                    windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { msg }", "Kasa device error - BatteryMonitor", 0x10, 0, 30000)
+            elif "result" in body_data:
+                result = body_data["result"]
+                if "token" in result:
+                    kasa_token = result["token"]
+                    config["KASA_DEVICE"]["kasa_token"] = kasa_token
+                    with open("config.ini", "w") as configfile:
+                        config.write(configfile)
+            return (response.status, body_data)
     except Exception as e:
         return None
 
