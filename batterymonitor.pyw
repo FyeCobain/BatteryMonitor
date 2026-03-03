@@ -23,6 +23,8 @@ startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 # Checks battery's current percent each second
 running = True
 paused = False
+kasa_token = ""
+kasa_device_id = ""
 kasa_error_codes = []
 def start():
     if hibernation.strip().lower() == "true":
@@ -64,9 +66,32 @@ def sleep(miliseconds):
     while running and round(time() * 1000) - start_time < miliseconds:
         continue
 
+# Retuns the login response from the Kasa cloud
+def kasa_login():
+    return post(f"https://wap.tplinkcloud.com", {
+        "method": "login",
+        "params": {
+            "appType": "Kasa",
+            "cloudUserName": kasa_email,
+            "cloudPassword": kasa_password,
+            "terminalUUID": str(uuid.uuid4())
+        }
+    })
+
+# Returns the devices list response from Kasa Cloud
+def kasa_get_device_id():
+    return post(f"https://wap.tplinkcloud.com?token={kasa_token}", {
+        "method": "getDeviceList"
+    })
+
 # Set plug state
 def plug(on, shutingDown = False):
     sleepTime = 5000
+
+    if not kasa_device_id and kasa_email and kasa_password and kasa_device_alias:
+        kasa_login()
+        if kasa_token:
+            kasa_get_device_id()
 
     # Performing a GET request
     url = on_url if on else off_url
@@ -95,6 +120,9 @@ def plug(on, shutingDown = False):
         })
         if response:
             if response[0] == 200:
+                if response[1]["error_code"] == 0 and len(kasa_error_codes):
+                    kasa_error_codes.clear()
+
                 if "result" in response[1]:
                     if "token" in response[1]["result"]:
                         return
@@ -127,6 +155,7 @@ def get(url):
 # Performs a POST request and returns the response data as a tuple
 def post(url, body):
     global kasa_token
+    global kasa_device_id
     try:
         request = Request(
             url,
@@ -139,27 +168,25 @@ def post(url, body):
             error_code = body_data["error_code"]
             if error_code != 0:
                 msg = body_data["msg"]
-                if kasa_username and kasa_password and "token expired" in msg.lower():
-                    login_response = post(f"https://wap.tplinkcloud.com", {
-                        "method": "login",
-                        "params": {
-                            "appType": "Kasa",
-                            "cloudUserName": kasa_username,
-                            "cloudPassword": kasa_password,
-                            "terminalUUID": str(uuid.uuid4())
-                        }
-                    })
-                    return login_response
+                if kasa_email and kasa_password and kasa_device_alias and "token expired" in msg.lower():
+                    return kasa_login()
                 elif not error_code in kasa_error_codes:
                     kasa_error_codes.append(error_code)
-                    windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { msg }", "Kasa device error - BatteryMonitor", 0x10, 0, 30000)
+                    windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { msg }", "Kasa error - BatteryMonitor", 0x10, 0, 30000)
             elif "result" in body_data:
                 result = body_data["result"]
                 if "token" in result:
                     kasa_token = result["token"]
-                    config["KASA_DEVICE"]["kasa_token"] = kasa_token
-                    with open("config.ini", "w") as configfile:
-                        config.write(configfile)
+                elif "deviceList" in result:
+                    devices = [d for d in result["deviceList"] if d["alias"].lower() == kasa_device_alias.lower()]
+                    if not len(devices):
+                        error_code = -7
+                        if not error_code in kasa_error_codes:
+                            kasa_error_codes.append(error_code)
+                            windll.user32.MessageBoxTimeoutW(0, f'Device "{kasa_device_alias}" not found', "Kasa error - BatteryMonitor", 0x10, 0, 30000)
+                    else:
+                        kasa_device_id = devices[0]["deviceId"]
+
             return (response.status, body_data)
     except Exception as e:
         return None
@@ -172,7 +199,7 @@ def on_closing(sysTrayIcon):
     if caller:
         startfile(caller)
         caller = None
-        
+
 # Getting current script path
 scr_path = sub(r'\\[^\\]*$', '', path.realpath(__file__))
 
@@ -183,7 +210,7 @@ min_percent = int(config['BATTERY_RANGE']['min_percent'])
 max_percent = int(config['BATTERY_RANGE']['max_percent'])
 locals().update(config['PING_DOMAIN'])  
 locals().update(config['WEBHOOKS'])
-locals().update(config['KASA_DEVICE'])
+locals().update(config['KASA'])
 locals().update(config['HOTKEYS'])
 
 # Returns true if the script will run at start

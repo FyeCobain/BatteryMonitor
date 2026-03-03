@@ -1,10 +1,10 @@
 # `Battery Monitor`
 
-_**Version** 6.4_
+_**Version** 7.0_
 
-A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It functions as an icon in the system tray.
+A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It works as an icon in the system tray.
 
-#### **[Source code](https://github.com/FyeCobain/Battery-monitor)**
+#### **[Source code](https://github.com/FyeCobain/BatteryMonitor)**
 
 ### Requirements
 ##### **[pynput](https://pynput.readthedocs.io)**
@@ -19,13 +19,11 @@ pip install pynput simplesystray
 
 - You can set a **domain** to ping. Useful for gaming.
 
-- If the **hibernation hotkey**  is set to True, you can hibernate by pressing _shift_ + _insert_.
+- If the **hibernation hotkey**  is set to True, you can hibernat your laptop by pressing _shift_ + _insert_.
 
 - You can set two **URLs** so that the script makes a GET request when the percentage is less than the minimum or greater than the maximum allowed. Intended to set up an **IFTTT** webhook to turn **ON/OFF** a smart plug.
 
-- You can set a Kasa token and device ID for the same result. Please refer to [this gist](https://gist.github.com/FyeCobain/1e367b0a9d5693c579a4fd6b20fac682).
-
-**Your Kasa token will expire in 1 month, so if you want the script to refresh it automatically, set your Kasa username and password.**
+- You can set a Kasa username, password and device alias for the same result.
 
 If no ON/OFF **URLs** and no Kasa device are set, the script will play a sound when the battery needs to be connected or disconnected.
 
