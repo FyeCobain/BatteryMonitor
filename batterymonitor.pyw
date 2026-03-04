@@ -88,7 +88,7 @@ def kasa_get_device_id():
 def plug(on, shutingDown = False):
     sleepTime = 5000
 
-    if not kasa_device_id and kasa_email and kasa_password and kasa_device_alias:
+    if not kasa_device_id and kasa_email and kasa_password and kasa_device_name:
         kasa_login()
         if kasa_token:
             kasa_get_device_id()
@@ -168,7 +168,7 @@ def post(url, body):
             error_code = body_data["error_code"]
             if error_code != 0:
                 msg = body_data["msg"]
-                if kasa_email and kasa_password and kasa_device_alias and "token expired" in msg.lower():
+                if kasa_email and kasa_password and kasa_device_name and "token expired" in msg.lower():
                     return kasa_login()
                 elif not error_code in kasa_error_codes:
                     kasa_error_codes.append(error_code)
@@ -178,14 +178,19 @@ def post(url, body):
                 if "token" in result:
                     kasa_token = result["token"]
                 elif "deviceList" in result:
-                    devices = [d for d in result["deviceList"] if d["alias"].lower() == kasa_device_alias.lower()]
-                    if not len(devices):
+                    device = ""
+                    for d in result["deviceList"]:
+                        if d["alias"].lower() == kasa_device_name.lower():
+                            device = d["deviceId"]
+                            break
+
+                    if not device:
                         error_code = -7
                         if not error_code in kasa_error_codes:
                             kasa_error_codes.append(error_code)
-                            windll.user32.MessageBoxTimeoutW(0, f'Device "{kasa_device_alias}" not found', "Kasa error - BatteryMonitor", 0x10, 0, 30000)
+                            windll.user32.MessageBoxTimeoutW(0, f'Device "{kasa_device_name}" not found', "Kasa error - BatteryMonitor", 0x10, 0, 30000)
                     else:
-                        kasa_device_id = devices[0]["deviceId"]
+                        kasa_device_id = device
 
             return (response.status, body_data)
     except Exception as e:

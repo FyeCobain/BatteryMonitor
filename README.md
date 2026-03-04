@@ -1,6 +1,6 @@
 # `Battery Monitor`
 
-_**Version** 7.0_
+_**Version** 7.1_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It works as an icon in the system tray.
 
@@ -23,7 +23,7 @@ pip install pynput simplesystray
 
 - You can set two **URLs** so that the script makes a GET request when the percentage is less than the minimum or greater than the maximum allowed. Intended to set up an **IFTTT** webhook to turn **ON/OFF** a smart plug.
 
-- You can set a Kasa username, password and device alias for the same result.
+- You can set a Kasa username, password and device name (the one set in the Kasa app) for the same result.
 
 If no ON/OFF **URLs** and no Kasa device are set, the script will play a sound when the battery needs to be connected or disconnected.
 
