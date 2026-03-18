@@ -8,14 +8,12 @@ def capslock_on():
 
 paused = False
 callback = None
-shift_l_pressed = False
-shift_r_pressed = False
+cmd_pressed = False
 insert_pressed = False
 
 # On key press
 def on_press(key, injected):
-    global shift_l_pressed
-    global shift_r_pressed
+    global cmd_pressed
     global insert_pressed
 
     if paused:
@@ -24,18 +22,15 @@ def on_press(key, injected):
     try:
         keyChar = key.char
     except AttributeError:
-        if (key == Key.shift):
-            shift_l_pressed = True
-        elif (key == Key.shift_r):
-            shift_r_pressed = True
-        elif (key == Key.insert):
+        if key == Key.cmd:
+            cmd_pressed = True
+        elif key == Key.insert:
             insert_pressed = True
 
 #On key release
 def on_release(key, injected):
     global paused
-    global shift_l_pressed
-    global shift_r_pressed
+    global cmd_pressed
     global insert_pressed
 
     if paused:
@@ -44,20 +39,17 @@ def on_release(key, injected):
     try:
         keyChar = key.char
     except AttributeError:
-        if (shift_l_pressed or shift_r_pressed) and insert_pressed:
+        if cmd_pressed and insert_pressed:
             paused = True
             callback()
             sl(4)
             paused = False
-            shift_l_pressed = False
-            shift_r_pressed = False
+            cmd_pressed = False
             insert_pressed = False
 
-        if (key == Key.shift):
-            shift_l_pressed = False
-        elif (key == Key.shift_r):
-            shift_r_pressed = False
-        elif (key == Key.insert):
+        if key == Key.cmd:
+            cmd_pressed = False
+        elif key == Key.insert:
             insert_pressed = False
 
 # Starts the listening and sets the callback
