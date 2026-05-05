@@ -172,7 +172,10 @@ def post(url, body):
                     return kasa_login()
                 elif not error_code in kasa_error_codes:
                     kasa_error_codes.append(error_code)
-                    windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { msg }", "Kasa error - BatteryMonitor", 0x10, 0, 30000)
+                    if error_code != -20601:
+                        windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { msg }", "Kasa error - BatteryMonitor", 0x10, 0, 30000)
+                    else:
+                        windll.user32.MessageBoxW(0, f"Error { error_code }: { msg }", "Kasa error - BatteryMonitor", 0x10)
             elif "result" in body_data:
                 result = body_data["result"]
                 if "token" in result:
