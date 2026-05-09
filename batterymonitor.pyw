@@ -255,17 +255,10 @@ def shutdown():
     subprocess.Popen('shutdown -s -t 0', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 # tries to turn off the smart plug, pauses the battery monitor and hibernates the computer
-def hibernate(play_sound=True):
+def hibernate():
     global paused
     paused = True
     charger_plugged = charger_is_plugged()
-    if play_sound:
-        threading.Thread(
-            target=lambda: PlaySound(scr_path + r'\sounds\hibernation.wav', SND_FILENAME),
-            daemon=True
-        ).start()
-        if not charger_plugged:
-            sl(1)
     if charger_plugged:
         plug(False, True)
     subprocess.Popen('shutdown -h', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

@@ -9,13 +9,11 @@ def capslock_on():
 paused = False
 callback = None
 cmd_pressed = False
-shift_pressed = False
 insert_pressed = False
 
 # On key press
 def on_press(key, injected):
     global cmd_pressed
-    global shift_pressed
     global insert_pressed
 
     if paused:
@@ -26,8 +24,6 @@ def on_press(key, injected):
     except AttributeError:
         if key == Key.cmd:
             cmd_pressed = True
-        if key == Key.shift_l or key == Key.shift_r:
-            shift_pressed = True
         elif key == Key.insert:
             insert_pressed = True
 
@@ -35,7 +31,6 @@ def on_press(key, injected):
 def on_release(key, injected):
     global paused
     global cmd_pressed
-    global shift_pressed
     global insert_pressed
 
     if paused:
@@ -46,17 +41,14 @@ def on_release(key, injected):
     except AttributeError:
         if cmd_pressed and insert_pressed:
             paused = True
-            callback(not shift_pressed)
+            callback()
             sl(4)
             paused = False
             cmd_pressed = False
-            shift_pressed = False
             insert_pressed = False
 
         if key == Key.cmd:
             cmd_pressed = False
-        if key == Key.shift_l or key == Key.shift_r:
-            shift_pressed = False
         elif key == Key.insert:
             insert_pressed = False
 
