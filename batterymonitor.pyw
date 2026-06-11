@@ -33,9 +33,6 @@ def start():
     global running
     global paused
     while running:
-        if (paused):
-            continue
-
         # Getting battery info
         battery_percent = get_battery_percent()
         charger_plugged = charger_is_plugged()
@@ -43,10 +40,11 @@ def start():
         # Updating tray icon's tooltip
         sysTrayIcon.update(hover_text = f'{battery_percent}%' + ('' if not charger_plugged else ' (Charging)'))
 
-        if battery_percent <= min_percent and not charger_plugged: # If min percent reached...
-            plug(True)
-        elif battery_percent >= max_percent and charger_plugged: # If max percent reached...
-            plug(False)
+        if not paused:
+            if battery_percent <= min_percent and not charger_plugged: # If min percent reached...
+                plug(True)
+            elif battery_percent >= max_percent and charger_plugged: # If max percent reached...
+                plug(False)
 
         sleep(1500)
 
@@ -271,21 +269,29 @@ if len(argv) > 1:
     if path.exists(argv[1]):
         caller = path.realpath(argv[1])
 
+# Toggles the paused state
+def toggle_pause():
+    global paused
+    paused = not paused
+    sysTrayIcon.update(menu_options = get_menu_options())
+
 def get_menu_options():
     if ping_domain:
         return (
-            (f"Ping to {ping_domain}", None, lambda systray, num: system(f'ping {ping_domain} & TIMEOUT /T 6')),
-            ("Open script dir", None, lambda systray, num: startfile(scr_path)),
-            ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start()),
+            (f"Ping to {ping_domain}", scr_path + r'\icons\web.ico', lambda systray, num: system(f'ping {ping_domain} & TIMEOUT /T 6')),
+            ("Open script dir", scr_path + r'\icons\folder.ico', lambda systray, num: startfile(scr_path)),
+            ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False))
+            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False)),
+            ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
     else:
         return (
-            ("Open script dir", None, lambda systray, num: startfile(scr_path)),
-            ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start()),
+            ("Open script dir", scr_path + r'\icons\folder.ico', lambda systray, num: startfile(scr_path)),
+            ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False))
+            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False)),
+            ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
 
 sysTrayIcon = SysTrayIcon(scr_path + r'\icons\plug.ico', 'Battery Monitor', menu_options = get_menu_options(), on_quit = on_closing, default_menu_index = 0)

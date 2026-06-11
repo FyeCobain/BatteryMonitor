@@ -1,6 +1,6 @@
 # `Battery Monitor`
 
-_**Version** 7.5_
+_**Version** 7.6_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug, preventing it from getting too low or too high, thus helping to extend battery life. It works as an icon in the system tray.
 
@@ -37,6 +37,20 @@ batterymonitor.pyw "C:\OpenWhenClosing.exe"
 #### Icons
 
 [Plug icons created by Pixel perfect - Flaticon](https://www.flaticon.com/free-icons/plug)
+
+<a href="https://www.flaticon.com/free-icons/ui" title="ui icons">Ui icons created by Yudhi Restu - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/folder" title="folder icons">Folder icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/pause-button" title="pause button icons">Pause button icons created by Anggara - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/pause" title="pause icons">Pause icons created by IYAHICON - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/off" title="off icons">Off icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/clock" title="clock icons">Clock icons created by dmitri13 - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/right" title="right icons">Right icons created by Pixel perfect - Flaticon</a>
 
 #### Sounds
 
