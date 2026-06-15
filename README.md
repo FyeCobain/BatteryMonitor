@@ -52,6 +52,8 @@ batterymonitor.pyw "C:\OpenWhenClosing.exe"
 
 <a href="https://www.flaticon.com/free-icons/right" title="right icons">Right icons created by Pixel perfect - Flaticon</a>
 
+<a href="https://www.flaticon.com/free-icons/cat" title="cat icons">Cat icons created by Dave Gandy - Flaticon</a>
+
 #### Sounds
 
 <a href="https://freesound.org/people/FoolBoyMedia/sounds/352650/">Piano Notification 4</a> by <a href="https://freesound.org/people/FoolBoyMedia/">FoolBoyMedia</a> | License: <a href="https://creativecommons.org/licenses/by-nc/4.0/">Attribution NonCommercial 4.0</a>

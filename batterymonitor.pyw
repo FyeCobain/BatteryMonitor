@@ -8,6 +8,7 @@ import uuid
 from configparser import ConfigParser
 from urllib.request import urlopen, Request
 from urllib.parse import urlencode
+from webbrowser import open as openlink
 import json
 import winreg
 from winsound import PlaySound, SND_FILENAME
@@ -280,6 +281,7 @@ def get_menu_options():
         return (
             (f"Ping to {ping_domain}", scr_path + r'\icons\web.ico', lambda systray, num: system(f'ping {ping_domain} & TIMEOUT /T 6')),
             ("Open script dir", scr_path + r'\icons\folder.ico', lambda systray, num: startfile(scr_path)),
+            ("Source code", scr_path + r'\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
             ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
             ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False)),
@@ -288,6 +290,7 @@ def get_menu_options():
     else:
         return (
             ("Open script dir", scr_path + r'\icons\folder.ico', lambda systray, num: startfile(scr_path)),
+            ("Source code", scr_path + r'\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
             ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
             ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False)),
