@@ -98,7 +98,7 @@ def plug(on, shutingDown = False):
         response = get(url)
         if response:
             if response[0] == 200:
-                if not (shutingDown):
+                if not shutingDown:
                     sleep(sleepTime)
                 else:
                     sl(.5)
@@ -126,7 +126,7 @@ def plug(on, shutingDown = False):
                     if "token" in response[1]["result"]:
                         return
 
-                if not (shutingDown):
+                if not shutingDown:
                     sleep(sleepTime)
                 else:
                     sl(.5)
@@ -275,6 +275,8 @@ def toggle_pause():
     global paused
     paused = not paused
     sysTrayIcon.update(menu_options = get_menu_options())
+    if paused and not charger_is_plugged():
+        plug(True)
 
 def get_menu_options():
     if ping_domain:
