@@ -7,12 +7,10 @@ from time import time
 import uuid
 from configparser import ConfigParser
 from urllib.request import urlopen, Request
-from urllib.parse import urlencode
 from webbrowser import open as openlink
 import json
 import winreg
 from winsound import PlaySound, SND_FILENAME
-import threading
 from time import sleep as sl
 from simplesystray import SysTrayIcon
 import keyboard
@@ -51,12 +49,12 @@ def start():
 
 # Returns the current battery percent
 def get_battery_percent():
-    process = subprocess.Popen('WMIC PATH Win32_Battery Get EstimatedChargeRemaining', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(['powershell', '-Command', '(Get-WmiObject win32_battery).estimatedChargeRemaining'], startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return int(search(r"\d+", str(process.stdout.read())).group(0))
 
 # Returns true if the charger is plugged in
 def charger_is_plugged():
-    process = subprocess.Popen('WMIC Path Win32_Battery Get BatteryStatus', startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(['powershell', '-Command', '(Get-WmiObject win32_battery).BatteryStatus'], startupinfo=startupinfo, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     return (search(r"\d+", str(process.stdout.read())).group(0)) == '2'
 
 # Custom sleep function, to sleep only if battery monitor is running
@@ -195,7 +193,7 @@ def post(url, body):
                         kasa_device_id = device
 
             return (response.status, body_data)
-    except Exception as e:
+    except:
         return None
 
 # When closing, stop battery monitor and run "caller" file (if not None)
@@ -229,7 +227,6 @@ def does_run_at_start():
         return False
     except:
         return False
-    return False
 
 # Toggles the "Run at start" option
 def toggle_run_at_start():
@@ -286,7 +283,7 @@ def get_menu_options():
             ("Source code", scr_path + r'\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
             ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False)),
+            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate()),
             ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
     else:
@@ -295,7 +292,7 @@ def get_menu_options():
             ("Source code", scr_path + r'\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
             ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
             ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate(False)),
+            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate()),
             ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
 
