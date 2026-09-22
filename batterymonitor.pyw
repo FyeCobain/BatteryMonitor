@@ -7,6 +7,7 @@ from time import time
 import uuid
 from configparser import ConfigParser
 from urllib.request import urlopen, Request
+from concurrent.futures import ThreadPoolExecutor
 from webbrowser import open as openlink
 import json
 import winreg
@@ -23,7 +24,7 @@ startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 running = True
 paused = False
 kasa_token = ""
-kasa_device_id = ""
+kasa_device_ids = []
 kasa_error_codes = []
 def start():
     if hibernation.strip().lower() == "true":
@@ -76,7 +77,7 @@ def kasa_login():
     })
 
 # Returns the devices list response from Kasa Cloud
-def kasa_get_device_id():
+def kasa_get_device_ids():
     return post(f"https://wap.tplinkcloud.com?token={kasa_token}", {
         "method": "getDeviceList"
     })
@@ -85,10 +86,10 @@ def kasa_get_device_id():
 def plug(on, shutingDown = False):
     sleepTime = 5000
 
-    if not kasa_device_id and kasa_email and kasa_password and kasa_device_name:
+    if not len(kasa_device_ids) and kasa_email and kasa_password:
         kasa_login()
         if kasa_token:
-            kasa_get_device_id()
+            kasa_get_device_ids()
 
     # Performing a GET request
     url = on_url if on else off_url
@@ -105,33 +106,43 @@ def plug(on, shutingDown = False):
                 if on and charger_plugged or not on and not charger_plugged:
                     return
 
-    # Performing a POST request
-    elif kasa_token and kasa_device_id:
+    # Performing POST requests for each device
+    elif kasa_token and len(kasa_device_ids):
         state = "1" if on else "0"
-        response = post(f"https://wap.tplinkcloud.com/?token={kasa_token}", {
-            "method": "passthrough",
-            "params": {
-                "deviceId": kasa_device_id,
-                "requestData": "{\"system\":{\"set_relay_state\":{\"state\":" + state + "}}}"
-            }
-        })
-        if response:
-            if response[0] == 200:
-                if response[1]["error_code"] == 0 and len(kasa_error_codes):
+        requests = [(f"https://wap.tplinkcloud.com/?token={kasa_token}", {
+                "method": "passthrough",
+                "params": {
+                    "deviceId": device_id,
+                    "requestData": "{\"system\":{\"set_relay_state\":{\"state\":" + state + "}}}"
+                }
+            }) for device_id in kasa_device_ids]
+
+        responses = []
+        with ThreadPoolExecutor(max_workers=len(kasa_device_ids)) as executor:
+            futures = [
+                executor.submit(post, url, body) for url, body in requests
+            ]
+            responses = [ future.result() for future in futures ]
+
+        for response in responses:
+            if response:
+                if response[0] == 200 and response[1]["error_code"] == 0:
                     kasa_error_codes.clear()
 
-                if "result" in response[1]:
-                    if "token" in response[1]["result"]:
+                    if "result" in response[1]:
+                        if "token" in response[1]["result"]:
+                            return
+
+                    if not shutingDown:
+                        sleep(sleepTime)
+                    else:
+                        sl(.5)
+                    sleepTime = 0
+                    charger_plugged = charger_is_plugged()                
+                    if on and charger_plugged or not on and not charger_plugged:
                         return
 
-                if not shutingDown:
-                    sleep(sleepTime)
-                else:
-                    sl(.5)
-                sleepTime = 0
-                charger_plugged = charger_is_plugged()
-                if on and charger_plugged or not on and not charger_plugged:
-                    return
+                    break
 
     if on:
         PlaySound(scr_path + r'\sounds\low.wav', SND_FILENAME)
@@ -152,7 +163,8 @@ def get(url):
 # Performs a POST request and returns the response data as a tuple
 def post(url, body):
     global kasa_token
-    global kasa_device_id
+    global kasa_device_ids
+
     try:
         request = Request(
             url,
@@ -165,9 +177,9 @@ def post(url, body):
             error_code = body_data["error_code"]
             if error_code != 0:
                 msg = body_data["msg"]
-                if kasa_email and kasa_password and kasa_device_name and "token expired" in msg.lower():
+                if kasa_email and kasa_password and "token expired" in msg.lower():
                     return kasa_login()
-                elif not error_code in kasa_error_codes:
+                elif error_code != -20571 and not error_code in kasa_error_codes:
                     kasa_error_codes.append(error_code)
                     if error_code != -20601:
                         windll.user32.MessageBoxTimeoutW(0, f"Error { error_code }: { msg }", "Kasa error - BatteryMonitor", 0x10, 0, 30000)
@@ -178,19 +190,28 @@ def post(url, body):
                 if "token" in result:
                     kasa_token = result["token"]
                 elif "deviceList" in result:
-                    device = ""
-                    for d in result["deviceList"]:
-                        if d["alias"].lower() == kasa_device_name.lower():
-                            device = d["deviceId"]
+                    # Getting all the device IDs
+                    device_ids = []
+                    index = 1
+                    while True:
+                        current_device_var_name = 'kasa_device_' + str(index)
+                        if not current_device_var_name in globals():
                             break
 
-                    if not device:
+                        current_device_name = globals()[current_device_var_name].strip().lower()
+                        for d in result["deviceList"]:
+                            if d["alias"].lower() == current_device_name:
+                                device_ids.append(d["deviceId"])
+                                break
+                        index += 1
+
+                    if not len(device_ids):
                         error_code = -7
                         if not error_code in kasa_error_codes:
                             kasa_error_codes.append(error_code)
-                            windll.user32.MessageBoxTimeoutW(0, f'Device "{kasa_device_name}" not found', "Kasa error - BatteryMonitor", 0x10, 0, 30000)
+                            windll.user32.MessageBoxTimeoutW(0, f'The specified Kasa devices were not found in your account', "Error - BatteryMonitor", 0x10, 0, 30000)
                     else:
-                        kasa_device_id = device
+                        kasa_device_ids = device_ids
 
             return (response.status, body_data)
     except:
