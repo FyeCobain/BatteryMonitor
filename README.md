@@ -24,11 +24,9 @@ pip install pynput simplesystray
 
 - If the **hibernation hotkey** is set to True, you can hibernate your computer by pressing **_Windows_ + _Insert_**.
 
-- You can set two **URLs** so that the script makes a GET request when the percentage is less than the minimum or greater than the maximum allowed. Intended to set up an **IFTTT** webhook to turn **ON/OFF** a smart plug.
+- You can set a any number of Kasa (TP-Link) smart plugs so that the script turns them on or off when the battery percentage falls below the minimum or exceeds the maximum allowed limit.
 
-- You can set a Kasa username, password and any amount of device names (the ones set in the Kasa app) for the same result.
-
-If no ON/OFF **URLs** and no Kasa device are set, the script will play a sound when the battery needs to be connected or disconnected.
+- The script will play a sound when the battery needs to be connected or disconnected.
 
 - You can open the script and pass it the path to a file. Closing the script will open that file. Intended to open the script from an application that needs to be closed and will be reopened when the user exits the script.
 ```

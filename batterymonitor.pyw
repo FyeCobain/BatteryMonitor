@@ -91,21 +91,6 @@ def plug(on, shutingDown = False):
         if kasa_token:
             kasa_get_device_ids()
 
-    # Performing a GET request
-    url = on_url if on else off_url
-    if url:
-        response = get(url)
-        if response:
-            if response[0] == 200:
-                if not shutingDown:
-                    sleep(sleepTime)
-                else:
-                    sl(.5)
-                sleepTime = 0
-                charger_plugged = charger_is_plugged()
-                if on and charger_plugged or not on and not charger_plugged:
-                    return
-
     # Performing POST requests for each device
     elif kasa_token and len(kasa_device_ids):
         state = "1" if on else "0"
@@ -151,14 +136,6 @@ def plug(on, shutingDown = False):
 
     if not shutingDown:
         sleep(sleepTime)
-
-# Performs a GET request and returns the response data as a tuple
-def get(url):
-    try:
-        with urlopen(Request(url), timeout = 10) as response:
-            return (response.status, response.read().decode())
-    except:
-        return None
 
 # Performs a POST request and returns the response data as a tuple
 def post(url, body):
@@ -235,9 +212,8 @@ config.read(scr_path + r'\config.ini')
 min_percent = int(config['BATTERY_RANGE']['min_percent'])
 max_percent = int(config['BATTERY_RANGE']['max_percent'])
 locals().update(config['PING_DOMAIN'])  
-locals().update(config['WEBHOOKS'])
-locals().update(config['KASA'])
 locals().update(config['HOTKEYS'])
+locals().update(config['KASA'])
 
 # Returns true if the script will run at start
 def does_run_at_start():
