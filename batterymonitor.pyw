@@ -92,7 +92,7 @@ def plug(on, shutingDown = False):
             kasa_get_device_ids()
 
     # Performing POST requests for each device
-    elif kasa_token and len(kasa_device_ids):
+    if kasa_token and len(kasa_device_ids):
         state = "1" if on else "0"
         requests = [(f"https://wap.tplinkcloud.com/?token={kasa_token}", {
                 "method": "passthrough",
