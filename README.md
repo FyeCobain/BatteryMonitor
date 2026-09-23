@@ -1,10 +1,10 @@
 # `Battery Monitor`
 
-_**Version** 10.2_
+_**Version** 11.0_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug; preventing it from getting too low or too high, thus helping to extend battery life. It works as an icon in the system tray.
 
-[![screenshot.png](./screenshot.png)](https://raw.githubusercontent.com/FyeCobain/BatteryMonitor/main/screenshot.png)
+[![menu.png](./assets/screenshots/menu.png)](https://raw.githubusercontent.com/FyeCobain/BatteryMonitor/main/assets/screenshots/menu.png)
 
 #### **[Source code](https://github.com/FyeCobain/BatteryMonitor)**
 
@@ -25,6 +25,10 @@ pip install pynput simplesystray
 - If the **hibernation hotkey** is set to True, you can hibernate your computer by pressing **_Windows_ + _Insert_**.
 
 - You can set a any number of Kasa (TP-Link) smart plugs so that the script turns them on or off when the battery percentage falls below the minimum or exceeds the maximum allowed limit.
+
+[![kasa_devices.png](./assets/screenshots/kasa_devices.png)](https://raw.githubusercontent.com/FyeCobain/BatteryMonitor/main/assets/screenshots/kasa_devices.png)
+
+[![kasa_devices_config.png](./assets/screenshots/kasa_devices_config.png)](https://raw.githubusercontent.com/FyeCobain/BatteryMonitor/main/assets/screenshots/kasa_devices_config.png)
 
 - The script will play a sound when the battery needs to be connected or disconnected.
 

@@ -130,9 +130,9 @@ def plug(on, shutingDown = False):
                     break
 
     if on:
-        PlaySound(scr_path + r'\sounds\low.wav', SND_FILENAME)
+        PlaySound(scr_path + r'\assets\sounds\low.wav', SND_FILENAME)
     else:
-        PlaySound(scr_path + r'\sounds\hight.wav', SND_FILENAME)
+        PlaySound(scr_path + r'\assets\sounds\hight.wav', SND_FILENAME)
 
     if not shutingDown:
         sleep(sleepTime)
@@ -167,6 +167,7 @@ def post(url, body):
                 if "token" in result:
                     kasa_token = result["token"]
                 elif "deviceList" in result:
+
                     # Getting all the device IDs
                     device_ids = []
                     index = 1
@@ -275,25 +276,25 @@ def toggle_pause():
 def get_menu_options():
     if ping_domain:
         return (
-            (f"Ping to {ping_domain}", scr_path + r'\icons\web.ico', lambda systray, num: system(f'ping {ping_domain} & TIMEOUT /T 6')),
-            ("Open script dir", scr_path + r'\icons\folder.ico', lambda systray, num: startfile(scr_path)),
-            ("Source code", scr_path + r'\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
-            ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
-            ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate()),
-            ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
+            (f"Ping to {ping_domain}", scr_path + r'\assets\icons\web.ico', lambda systray, num: system(f'ping {ping_domain} & TIMEOUT /T 6')),
+            ("Open script dir", scr_path + r'\assets\icons\folder.ico', lambda systray, num: startfile(scr_path)),
+            ("Source code", scr_path + r'\assets\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
+            ("Pause" if not paused else "Resume", scr_path + (r'\assets\icons\pausa.ico' if not paused else r'\assets\icons\play.ico'), lambda systray, num: toggle_pause()),
+            ("Shutdown", scr_path + r'\assets\icons\shutdown.ico', lambda systray, num: shutdown()),
+            ("Hibernate", scr_path + r'\assets\icons\clock.ico', lambda systray, num: hibernate()),
+            ("Run at start", scr_path + r'\assets\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
     else:
         return (
-            ("Open script dir", scr_path + r'\icons\folder.ico', lambda systray, num: startfile(scr_path)),
-            ("Source code", scr_path + r'\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
-            ("Pause" if not paused else "Resume", scr_path + (r'\icons\pausa.ico' if not paused else r'\icons\play.ico'), lambda systray, num: toggle_pause()),
-            ("Shutdown", scr_path + r'\icons\shutdown.ico', lambda systray, num: shutdown()),
-            ("Hibernate", scr_path + r'\icons\clock.ico', lambda systray, num: hibernate()),
-            ("Run at start", scr_path + r'\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
+            ("Open script dir", scr_path + r'\assets\icons\folder.ico', lambda systray, num: startfile(scr_path)),
+            ("Source code", scr_path + r'\assets\icons\github.ico', lambda systray, num: openlink("https://github.com/FyeCobain/BatteryMonitor")),
+            ("Pause" if not paused else "Resume", scr_path + (r'\assets\icons\pausa.ico' if not paused else r'\assets\icons\play.ico'), lambda systray, num: toggle_pause()),
+            ("Shutdown", scr_path + r'\assets\icons\shutdown.ico', lambda systray, num: shutdown()),
+            ("Hibernate", scr_path + r'\assets\icons\clock.ico', lambda systray, num: hibernate()),
+            ("Run at start", scr_path + r'\assets\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
 
-sysTrayIcon = SysTrayIcon(scr_path + r'\icons\plug.ico', 'Battery Monitor', menu_options = get_menu_options(), on_quit = on_closing, default_menu_index = 0)
+sysTrayIcon = SysTrayIcon(scr_path + r'\assets\icons\plug.ico', 'Battery Monitor', menu_options = get_menu_options(), on_quit = on_closing, default_menu_index = 0)
 sysTrayIcon.start()
 
 # Start battery monitor
