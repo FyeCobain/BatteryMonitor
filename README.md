@@ -1,6 +1,6 @@
 # `Battery Monitor`
 
-_**Version** 11.3_
+_**Version** 12.0_
 
 A Python script for **Windows** that monitors and controls the laptop's battery percentage, optionally with a smart plug; preventing it from getting too low or too high, thus helping to extend battery life. It works as an icon in the system tray.
 
@@ -30,14 +30,22 @@ pip install pynput simplesystray
 
 [![kasa_devices_config.png](./assets/screenshots/kasa_devices_config.png)](https://raw.githubusercontent.com/FyeCobain/BatteryMonitor/main/assets/screenshots/kasa_devices_config.png)
 
-- The script will play a sound when the battery needs to be connected or disconnected.
+> The script will play a sound when the battery needs to be connected or disconnected.
 
-- You can open the script and pass it the path to a file. Closing the script will open that file. Intended to open the script from an application that needs to be closed and will be reopened when the user exits the script.
+- You can open the script and pass pass it the desired initial device state so the script will turn on / off the device upon startup.
+Also you can pass the "watch" argument with a value of False, so the script will terminate immediately after starting.
+
 ```
-batterymonitor.pyw "C:\OpenWhenClosing.exe"
+# on, 1, True, Yes / off, 0, False, no
+batterymonitor.pyw --state=on --watch=False
 ```
 
-### Attributions
+- You can open the script and pass it the path to a file. Closing the script will launch that file.
+```
+batterymonitor.pyw --onexit="C:\LaunchOnExit.exe"
+```
+
+### Attributions    
 
 #### Icons
 

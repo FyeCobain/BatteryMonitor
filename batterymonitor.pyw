@@ -1,6 +1,6 @@
 import subprocess
 from os import path, system, startfile
-from re import search, sub
+from re import match, search, sub, IGNORECASE
 from sys import argv
 from ctypes import windll
 from time import time
@@ -108,6 +108,9 @@ def plug(on, shutingDown = False):
                 executor.submit(post, url, body) for url, body in requests
             ]
             responses = [ future.result() for future in futures ]
+
+        if not watch:
+            return
 
         for response in responses:
             if response:
@@ -259,11 +262,40 @@ def hibernate():
     sl(3.5)
     paused = False
 
-# Checking if there is a file path as an argument, if so have it open when this script is closed
+# Parses the boolean type argument
+def parse_boolean_argument(arg, fallback):
+    arg = arg.lower()
+    if arg == "1" or arg == "true" or arg == "on" or arg == "yes":
+        return True
+    elif arg == "0" or arg == "false" or arg == "off" or arg == "no":
+        return False
+    return fallback
+
+# Checking arguments
 caller = None
-if len(argv) > 1:
-    if path.exists(argv[1]):
-        caller = path.realpath(argv[1])
+init_state = None
+watch = True
+argument_regex = r'--([^=\"]+)=\"?([^\"]+)'
+for i, arg in enumerate(argv):
+    if i == 0:
+        continue
+    match_result = match(argument_regex, arg, IGNORECASE)
+    if (match_result):
+        arg_type = match_result.groups()[0].lower()
+        arg_value = match_result.groups()[1]
+        if arg_type == "onexit":
+            if path.exists(arg_value):
+                caller = path.realpath(arg_value)
+            else:
+                print("Invalid argument value", f'"{arg_value}"')
+        elif arg_type == "state":
+            init_state = parse_boolean_argument(arg_value, init_state)
+        elif arg_type == "watch":
+            watch = parse_boolean_argument(arg_value, watch)
+        else:
+            print("Invalid argument type", f'"{arg_type}"')
+    else:
+        print("Invalid argument", f'"{arg}"')
 
 # Toggles the paused state
 def toggle_pause():
@@ -294,8 +326,14 @@ def get_menu_options():
             ("Run at start", scr_path + r'\assets\icons\check.ico' if does_run_at_start() else None, lambda systray, num: toggle_run_at_start())
         )
 
-sysTrayIcon = SysTrayIcon(scr_path + r'\assets\icons\plug.ico', 'Battery Monitor', menu_options = get_menu_options(), on_quit = on_closing, default_menu_index = 0)
-sysTrayIcon.start()
+# Setting initial state
+if init_state != None:
+    plug(init_state, not watch)
 
-# Start battery monitor
-start()
+# Starting the battery monitor
+if watch:
+    sysTrayIcon = SysTrayIcon(scr_path + r'\assets\icons\plug.ico', 'Battery Monitor', menu_options = get_menu_options(), on_quit = on_closing, default_menu_index = 0)
+    sysTrayIcon.start()
+    start()
+elif caller:
+    on_closing(None)
