@@ -83,7 +83,7 @@ def kasa_get_device_ids():
     })
 
 # Set plug state
-def plug(on, shutingDown = False):
+def plug(on, shuting_down = False):
     sleepTime = 5000
 
     if not len(kasa_device_ids) and kasa_email and kasa_password:
@@ -121,7 +121,7 @@ def plug(on, shutingDown = False):
                         if "token" in response[1]["result"]:
                             return
 
-                    if not shutingDown:
+                    if not shuting_down:
                         sleep(sleepTime)
                     else:
                         sl(.5)
@@ -137,7 +137,7 @@ def plug(on, shutingDown = False):
     else:
         PlaySound(scr_path + r'\assets\sounds\hight.wav', SND_FILENAME)
 
-    if not shutingDown:
+    if watch and not shuting_down:
         sleep(sleepTime)
 
 # Performs a POST request and returns the response data as a tuple
